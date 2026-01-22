@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 double firstNum;
+bool userTypingSecondNum=false;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setFocusPolicy(Qt::StrongFocus);
+    setWindowTitle("Calculator");
     connect(ui->pushButton_0,SIGNAL(released()),this,SLOT(digit_pres()));
     connect(ui->pushButton_1,SIGNAL(released()),this,SLOT(digit_pres()));
     connect(ui->pushButton_2,SIGNAL(released()),this,SLOT(digit_pres()));
@@ -38,21 +41,30 @@ void MainWindow::digit_pres(){
     QPushButton * button=(QPushButton*)sender();
     double Nomber;
     QString newNomber;
-    if (ui->pushButton_plus->isChecked() || ui->pushButton_minus->isChecked() ||
-        ui->pushButton_ymnozit->isChecked() || ui->pushButton_delenie->isChecked()){
+    if ((ui->pushButton_plus->isChecked() || ui->pushButton_minus->isChecked() ||
+         ui->pushButton_ymnozit->isChecked() || ui->pushButton_delenie->isChecked()) && (!userTypingSecondNum)){
         Nomber=button->text().toDouble();
+        userTypingSecondNum=true;
+        newNomber=QString::number(Nomber,'g',15);
     }
     else{
-        Nomber=(ui->label->text()+button->text()).toDouble();
+        if (ui->label->text().contains('.')&& button->text()=="0"){
+            newNomber=ui->label->text()+button->text();
+        }
+        else{
+            Nomber=(ui->label->text()+button->text()).toDouble();
+            newNomber=QString::number(Nomber,'g',15);
+        }
+
     }
 
-    newNomber=QString::number(Nomber,'g',15);
+
     ui->label->setText(newNomber);
 }
 
 void MainWindow::on_pushButton_zapitaia_released()
 {
-    ui->label->setText(ui->label->text()+",");
+    ui->label->setText(ui->label->text()+".");
 }
 
 void MainWindow::operation_pressed(){
@@ -75,7 +87,12 @@ void MainWindow::operation_pressed(){
 
 void MainWindow::on_pushButton_Clear_released()
 {
-
+    ui->pushButton_plus->setChecked(false);
+    ui->pushButton_minus->setChecked(false);
+    ui->pushButton_ymnozit->setChecked(false);
+    ui->pushButton_delenie->setChecked(false);
+    userTypingSecondNum=false;
+    ui->label->setText("0");
 }
 
 
@@ -109,9 +126,13 @@ void MainWindow::on_pushButton_rawno_released()
         ui->label->setText(newNum);
         ui->pushButton_delenie->setChecked(false);
     }
+
+    userTypingSecondNum=false;
+
 }
 void MainWindow::math_operation_pressed(){
     QPushButton * button=(QPushButton*)sender();
     firstNum=ui->label->text().toDouble();
     button->setChecked(true);
 }
+

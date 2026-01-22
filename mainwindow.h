@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QMainWindow>
+#include <QKeyEvent>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -27,5 +28,6 @@ private slots:
     void on_pushButton_Clear_released();
     void on_pushButton_rawno_released();
     void math_operation_pressed();
+
 };
 #endif // MAINWINDOW_H
