@@ -1,138 +1,116 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-double firstNum;
-bool userTypingSecondNum=false;
+#include <QPushButton>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setFocusPolicy(Qt::StrongFocus);
     setWindowTitle("Calculator");
-    connect(ui->pushButton_0,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_1,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_2,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_3,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_4,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_5,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_6,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_7,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_8,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_9,SIGNAL(released()),this,SLOT(digit_pres()));
-    connect(ui->pushButton_plus_minus,SIGNAL(released()),this,SLOT(operation_pressed()));
-    connect(ui->pushButton_procent,SIGNAL(released()),this,SLOT(operation_pressed()));
-
-    connect(ui->pushButton_plus,SIGNAL(released()),this,SLOT(math_operation_pressed()));
-    connect(ui->pushButton_minus,SIGNAL(released()),this,SLOT(math_operation_pressed()));
-    connect(ui->pushButton_ymnozit,SIGNAL(released()),this,SLOT(math_operation_pressed()));
-    connect(ui->pushButton_delenie,SIGNAL(released()),this,SLOT(math_operation_pressed()));
-    ui->pushButton_plus->setCheckable(true);
-    ui->pushButton_minus->setCheckable(true);
-    ui->pushButton_ymnozit->setCheckable(true);
-    ui->pushButton_delenie->setCheckable(true);
-
+    setFocusPolicy(Qt::StrongFocus);
+    setupConnections();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow(){
     delete ui;
 }
-void MainWindow::digit_pres(){
-    QPushButton * button=(QPushButton*)sender();
-    double Nomber;
-    QString newNomber;
-    if ((ui->pushButton_plus->isChecked() || ui->pushButton_minus->isChecked() ||
-         ui->pushButton_ymnozit->isChecked() || ui->pushButton_delenie->isChecked()) && (!userTypingSecondNum)){
-        Nomber=button->text().toDouble();
-        userTypingSecondNum=true;
-        newNomber=QString::number(Nomber,'g',15);
-    }
-    else{
-        if (ui->label->text().contains('.')&& button->text()=="0"){
-            newNomber=ui->label->text()+button->text();
-        }
-        else{
-            Nomber=(ui->label->text()+button->text()).toDouble();
-            newNomber=QString::number(Nomber,'g',15);
-        }
 
-    }
-
-
-    ui->label->setText(newNomber);
+void MainWindow::setDisplayText(const QString &text){
+    ui->label->setText(text);
 }
 
-void MainWindow::on_pushButton_zapitaia_released()
-{
-    ui->label->setText(ui->label->text()+".");
+QString MainWindow::getDisplayText() const{
+    return ui->label->text();
 }
 
-void MainWindow::operation_pressed(){
-    QPushButton * button=(QPushButton*)sender();
-    double Nomber;
-    QString newNomber;
-    if (button->text()=="+/-"){
-        Nomber=ui->label->text().toDouble();
-        Nomber=Nomber*-1;
-        newNomber=QString::number(Nomber,'g',15);
-        ui->label->setText(newNomber);
-    }
-    if (button->text()=="%"){
-        Nomber=ui->label->text().toDouble();
-        Nomber=Nomber*0.01;
-        newNomber=QString::number(Nomber,'g',15);
-        ui->label->setText(newNomber);
-    }
-}
-
-void MainWindow::on_pushButton_Clear_released()
-{
+void MainWindow::resetOperationButtons(){
     ui->pushButton_plus->setChecked(false);
     ui->pushButton_minus->setChecked(false);
     ui->pushButton_ymnozit->setChecked(false);
     ui->pushButton_delenie->setChecked(false);
-    userTypingSecondNum=false;
-    ui->label->setText("0");
 }
 
-
-void MainWindow::on_pushButton_rawno_released()
-{
-    double Number;
-    double secondNum;
-    QString newNum;
-    secondNum=ui->label->text().toDouble();
-    if (ui->pushButton_plus->isChecked()){
-        Number=firstNum+secondNum;
-        newNum=QString::number(Number,'g',15);
-        ui->label->setText(newNum);
-        ui->pushButton_plus->setChecked(false);
-    }
-    else if (ui->pushButton_minus->isChecked()){
-        Number=firstNum-secondNum;
-        newNum=QString::number(Number,'g',15);
-        ui->label->setText(newNum);
-        ui->pushButton_minus->setChecked(false);
-    }
-    else if (ui->pushButton_ymnozit->isChecked()){
-        Number=firstNum*secondNum;
-        newNum=QString::number(Number,'g',15);
-        ui->label->setText(newNum);
-        ui->pushButton_ymnozit->setChecked(false);
-    }
-    else if (ui->pushButton_delenie->isChecked()){
-        Number=firstNum/secondNum;
-        newNum=QString::number(Number,'g',15);
-        ui->label->setText(newNum);
-        ui->pushButton_delenie->setChecked(false);
-    }
-
-    userTypingSecondNum=false;
-
-}
-void MainWindow::math_operation_pressed(){
-    QPushButton * button=(QPushButton*)sender();
-    firstNum=ui->label->text().toDouble();
-    button->setChecked(true);
+void MainWindow::setupConnections(){
+    connect(ui->pushButton_0, &QPushButton::clicked, [this]() { emit digitClicked(0); });
+    connect(ui->pushButton_1, &QPushButton::clicked, [this]() { emit digitClicked(1); });
+    connect(ui->pushButton_2, &QPushButton::clicked, [this]() { emit digitClicked(2); });
+    connect(ui->pushButton_3, &QPushButton::clicked, [this]() { emit digitClicked(3); });
+    connect(ui->pushButton_4, &QPushButton::clicked, [this]() { emit digitClicked(4); });
+    connect(ui->pushButton_5, &QPushButton::clicked, [this]() { emit digitClicked(5); });
+    connect(ui->pushButton_6, &QPushButton::clicked, [this]() { emit digitClicked(6); });
+    connect(ui->pushButton_7, &QPushButton::clicked, [this]() { emit digitClicked(7); });
+    connect(ui->pushButton_8, &QPushButton::clicked, [this]() { emit digitClicked(8); });
+    connect(ui->pushButton_9, &QPushButton::clicked, [this]() { emit digitClicked(9); });
+    connect(ui->pushButton_plus, &QPushButton::clicked, [this]() {
+        ui->pushButton_plus->setChecked(true);
+        emit operationClicked("+");
+    });
+    connect(ui->pushButton_minus, &QPushButton::clicked, [this]() {
+        ui->pushButton_minus->setChecked(true);
+        emit operationClicked("-");
+    });
+    connect(ui->pushButton_ymnozit, &QPushButton::clicked, [this]() {
+        ui->pushButton_ymnozit->setChecked(true);
+        emit operationClicked("×");
+    });
+    connect(ui->pushButton_delenie, &QPushButton::clicked, [this]() {
+        ui->pushButton_delenie->setChecked(true);
+        emit operationClicked("÷");
+    });
+    connect(ui->pushButton_rawno, &QPushButton::clicked, this, &MainWindow::equalsClicked);
+    connect(ui->pushButton_Clear, &QPushButton::clicked, this, &MainWindow::clearClicked);
+    connect(ui->pushButton_zapitaia, &QPushButton::clicked, this, &MainWindow::decimalClicked);
+    connect(ui->pushButton_plus_minus, &QPushButton::clicked, this, &MainWindow::plusMinusClicked);
+    connect(ui->pushButton_procent, &QPushButton::clicked, this, &MainWindow::percentClicked);
 }
 
+void MainWindow::onDigitButton(){
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    if (button) {
+        int digit = button->text().toInt();
+        emit digitClicked(digit);
+    }
+}
+
+void MainWindow::onOperationButton(){
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    if (button) {
+        QString operation = button->text();
+        resetOperationButtons();
+        button->setChecked(true);
+        emit operationClicked(operation);
+    }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event){
+    int key = event->key();
+    if (key >= Qt::Key_0 && key <= Qt::Key_9) {
+        emit digitClicked(key - Qt::Key_0);
+    }
+    else if (key == Qt::Key_Plus) {
+        ui->pushButton_plus->setChecked(true);
+        emit operationClicked("+");
+    }
+    else if (key == Qt::Key_Minus) {
+        ui->pushButton_minus->setChecked(true);
+        emit operationClicked("-");
+    }
+    else if (key == Qt::Key_Asterisk) {
+        ui->pushButton_ymnozit->setChecked(true);
+        emit operationClicked("×");
+    }
+    else if (key == Qt::Key_Slash) {
+        ui->pushButton_delenie->setChecked(true);
+        emit operationClicked("÷");
+    }
+    else if (key == Qt::Key_Enter || key == Qt::Key_Return || key == Qt::Key_Equal) {
+        emit equalsClicked();
+    }
+    else if (key == Qt::Key_Escape || key == Qt::Key_Delete) {
+        emit clearClicked();
+    }
+    else if (key == Qt::Key_Comma || key == Qt::Key_Period) {
+        emit decimalClicked();
+    }
+}

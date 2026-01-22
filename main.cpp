@@ -1,4 +1,7 @@
 #include "mainwindow.h"
+#include "model.h"
+#include "presenter.h"
+#include "historymanager.h"
 #include <QIcon>
 #include <QApplication>
 
@@ -11,8 +14,13 @@ int main(int argc, char *argv[])
 #else
     iconPath = ":/icons/icon.png";
 #endif
-    a.setWindowIcon(QIcon(":new/prefix1/icons/icon.png"));
-    MainWindow w;
-    w.show();
+    MainWindow view;
+    CalculatorModel model;
+    CalculatorPresenter presenter;
+    presenter.setView(&view);
+    presenter.setModel(&model);
+    presenter.initialize();
+
+    view.show();
     return a.exec();
 }
