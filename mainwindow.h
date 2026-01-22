@@ -19,5 +19,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+private slots:
+    void digit_pres();
+
 };
 #endif // MAINWINDOW_H
