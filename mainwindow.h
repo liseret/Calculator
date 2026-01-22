@@ -22,5 +22,10 @@ private:
 private slots:
     void digit_pres();
 
+    void on_pushButton_zapitaia_released();
+    void operation_pressed();
+    void on_pushButton_Clear_released();
+    void on_pushButton_rawno_released();
+    void binary_operation_pressed();
 };
 #endif // MAINWINDOW_H
